@@ -1,6 +1,9 @@
 package com.android.melitchi.atelier0;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,7 +21,7 @@ public class FirstActivity extends AppCompatActivity {
 
     Button bouton;
     EditText editable;
-
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,33 +35,50 @@ public class FirstActivity extends AppCompatActivity {
                     editable.setError("Merci de remplir le champs");
                     Toast.makeText(FirstActivity.this, "champs vide", Toast.LENGTH_SHORT).show();
                 }else{
-                    Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
+                   /* Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
                     intent.putExtra("sended", editable.getText().toString());
-                    startActivity(intent);
+                    startActivity(intent);*/
+                    displayLoader(true);
+                    new HelloAsyncTask(v.getContext()).execute(editable.getText().toString());
                 }
             }
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_first, menu);
-        return true;
-    }
+   private void displayLoader(boolean toDisplay){
+       if(toDisplay){
+           progressDialog = new ProgressDialog(FirstActivity.this);
+           progressDialog.setTitle("Chargement");
+            progressDialog.setMessage("Envoi du hello world");
+           progressDialog.show();
+       }else{
+           if(progressDialog !=null && progressDialog.isShowing()){
+                progressDialog.cancel();
+           }else{
+               Toast.makeText(this, "pg inexistante", Toast.LENGTH_SHORT).show();
+           }
+       }
+   }
+    public class HelloAsyncTask extends AsyncTask<String, Void, String>{
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        Context context;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        public HelloAsyncTask(final Context context){
+            this.context = context;
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        protected String doInBackground(String... params) {
+            if(!NetworkHelper.isInternetAvailable(context)){
+                return "Internet not available";
+            }
+            return NetworkHelper.connect(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(final String s) {
+            displayLoader(false);
+            editable.setText(s);
+        }
     }
 }
