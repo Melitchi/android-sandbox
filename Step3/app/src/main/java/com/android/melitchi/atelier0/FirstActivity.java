@@ -35,10 +35,10 @@ public class FirstActivity extends AppCompatActivity {
                     editable.setError("Merci de remplir le champs");
                     Toast.makeText(FirstActivity.this, "champs vide", Toast.LENGTH_SHORT).show();
                 }else{
-
-                    displayLoader(true);/* Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
+                   /* Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
                     intent.putExtra("sended", editable.getText().toString());
                     startActivity(intent);*/
+                    displayLoader(true);
                     new HelloAsyncTask(v.getContext()).execute(editable.getText().toString());
                 }
             }
