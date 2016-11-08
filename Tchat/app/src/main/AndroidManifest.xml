@@ -20,7 +20,7 @@
         </activity>
         <activity android:name=".SignupActivity" />
         <activity android:name=".messageList" />
-        <activity android:name=".message_item"></activity>
+        <activity android:name=".UserList"></activity>
     </application>
 
 </manifest>

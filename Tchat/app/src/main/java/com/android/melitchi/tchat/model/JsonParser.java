@@ -33,6 +33,20 @@ public class JsonParser {
         return messages;
     }
 
+    public static List<User> getUsers(String json) throws JSONException {
+        List <User> users = new LinkedList<>();
+        JSONArray array = new JSONArray(json);
+        JSONObject obj;
+        User user;
+        for(int i=0; i < array.length(); i++){
+            obj = array.getJSONObject(i);
+            user = new User(obj.optString("username"),obj.optString("urlPhoto"),  obj.optLong("date"));
+            users.add(user);
+        }
+
+        return users;
+    }
+
     public static String getToken(String response) throws JSONException {
         return new JSONObject(response).optString("token");
     }

@@ -1,6 +1,7 @@
 package com.android.melitchi.tchat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.melitchi.tchat.adapter.MessageAdapter;
 import com.android.melitchi.tchat.model.HttpResult;
 import com.android.melitchi.tchat.model.JsonParser;
 import com.android.melitchi.tchat.model.NetworkHelper;
@@ -81,7 +83,9 @@ public class messageList extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_tchat_users:
-                Toast.makeText(this, "Menu users", Toast.LENGTH_SHORT).show();
+                Intent in = new Intent(messageList.this, UserList.class);
+                in.putExtra("token",token);
+                startActivity(in);
                 return true;
         }
         return false;

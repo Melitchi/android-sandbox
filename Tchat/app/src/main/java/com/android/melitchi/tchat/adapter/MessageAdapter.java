@@ -1,4 +1,4 @@
-package com.android.melitchi.tchat;
+package com.android.melitchi.tchat.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,8 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 
+import com.android.melitchi.tchat.R;
 import com.android.melitchi.tchat.pojos.Message;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,7 +61,10 @@ public class MessageAdapter extends BaseAdapter {
 
         user.setText(getItem(i).getUsername());
         message.setText(getItem(i).getMsg());
-        date.setText(String.valueOf(getItem(i).getDate()));
+        DateFormat dateForm = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date netDate = (new Date(getItem(i).getDate()));
+
+        date.setText(String.valueOf(dateForm.format(netDate)));
 
         return view;
     }
