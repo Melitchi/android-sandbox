@@ -14,6 +14,10 @@ import android.widget.Toast;
 
 import com.android.melitchi.tchat.model.HttpResult;
 import com.android.melitchi.tchat.model.NetworkHelper;
+import com.android.melitchi.tchat.pojos.Message;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,7 +100,19 @@ public class HelloAsyncTask extends AsyncTask<String, Void,  HttpResult> {
     public void onPostExecute(final HttpResult response){
         displayLoader(false);
         if(response.code == 200){
-            Toast.makeText(context, "Vous êtes connecté", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Vous êtes connecté"+ response.json, Toast.LENGTH_SHORT).show();
+            String token="";
+            try {
+                token = new JSONObject(response.json).optString("token");
+            } catch (JSONException e) {
+                Log.e("token","unable to get token",e);
+                e.printStackTrace();
+            }
+            if (!token.isEmpty()) {
+                Intent in = new Intent(LoginActivity.this, messageList.class);
+                in.putExtra("token",token);
+                startActivity(in);
+            }
         } else {
             Toast.makeText(LoginActivity.this, "signin failed", Toast.LENGTH_LONG).show();
         }
