@@ -5,6 +5,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,6 +68,23 @@ public class messageList extends AppCompatActivity {
         });
         adapter = new MessageAdapter(this);
         listview.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_tchat,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_tchat_users:
+                Toast.makeText(this, "Menu users", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -141,7 +161,7 @@ public class messageList extends AppCompatActivity {
                 nb = msgs.size();
                 adapter.setMessages(msgs);
             }
-            Toast.makeText(messageList.this, "loaded nb messages: "+nb, Toast.LENGTH_LONG).show();
+            //Toast.makeText(messageList.this, "loaded nb messages: "+nb, Toast.LENGTH_LONG).show();
 
         }
     }
@@ -153,7 +173,6 @@ public class messageList extends AppCompatActivity {
 
             try {
                 Map<String, String> p = new HashMap<>();
-                Toast.makeText(messageList.this, "msg= "+params[0], Toast.LENGTH_SHORT).show();
                 p.put("message", params[0]);
                 HttpResult result = NetworkHelper.doPost("http://cesi.cleverapps.io/messages", p, token);
 
@@ -179,8 +198,6 @@ public class messageList extends AppCompatActivity {
                 Toast.makeText(messageList.this, "Error sending message", Toast.LENGTH_SHORT).show();
             }else {
                 Toast.makeText(messageList.this, "Message sended", Toast.LENGTH_SHORT).show();
-
-                //DO nothing
             }
         }
     }
