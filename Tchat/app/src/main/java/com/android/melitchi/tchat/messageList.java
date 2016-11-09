@@ -3,6 +3,8 @@ package com.android.melitchi.tchat;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +37,7 @@ public class messageList extends AppCompatActivity {
     private EditText msg;
     private Button send;
     private MessageAdapter adapter;
-
+    SwipeRefreshLayout swipe;
     private GetMessagesAsyncTask mtask;
     Timer timer;
     TimerTask task = new TimerTask() {
@@ -50,17 +52,18 @@ public class messageList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
         token = this.getIntent().getExtras().getString("token");
-        if (token == null){
+        if (token == null) {
             Toast.makeText(this, "No token. Can't display activity", Toast.LENGTH_SHORT).show();
             finish();
         }
         listview = (ListView) findViewById(R.id.listview);
         msg = (EditText) findViewById(R.id.txtToSend);
-        send = (Button)findViewById(R.id.sendBtn);
+        send = (Button) findViewById(R.id.sendBtn);
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (msg.getText().toString().isEmpty()){
+                if (msg.getText().toString().isEmpty()) {
                     msg.setError("vous ne pouvez pas envoyer un message vide");
                     return;
                 }
@@ -70,21 +73,28 @@ public class messageList extends AppCompatActivity {
         });
         adapter = new MessageAdapter(this);
         listview.setAdapter(adapter);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+        swipe.setColorSchemeColors(this.getResources().getColor(R.color.colorAccent), this.getResources().getColor(R.color.colorPrimary));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_tchat,menu);
+        inflater.inflate(R.menu.menu_tchat, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_tchat_users:
                 Intent in = new Intent(messageList.this, UserList.class);
-                in.putExtra("token",token);
+                in.putExtra("token", token);
                 startActivity(in);
                 return true;
         }
@@ -94,8 +104,8 @@ public class messageList extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        timer=new Timer();
-        timer.schedule(task,500,5000);
+        timer = new Timer();
+        timer.schedule(task, 500, 5000);
     }
 
 
@@ -106,9 +116,9 @@ public class messageList extends AppCompatActivity {
         mtask.cancel(true);
     }
 
-    private void refresh(){
-        if (mtask == null || mtask.getStatus()!=AsyncTask.Status.RUNNING){
-           mtask= new GetMessagesAsyncTask(messageList.this);
+    private void refresh() {
+        if (mtask == null || mtask.getStatus() != AsyncTask.Status.RUNNING) {
+            mtask = new GetMessagesAsyncTask(messageList.this);
             mtask.execute();
         }
 
@@ -127,7 +137,7 @@ public class messageList extends AppCompatActivity {
 
         @Override
         protected List<Message> doInBackground(String... params) {
-            if(!NetworkHelper.isInternetAvailable(context)){
+            if (!NetworkHelper.isInternetAvailable(context)) {
                 return null;
             }
 
@@ -136,7 +146,7 @@ public class messageList extends AppCompatActivity {
             try {
                 HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/messages", null, token);
                 // if ok
-                if(result.code == 200) {
+                if (result.code == 200) {
                     // Convert the InputStream into a string
                     return JsonParser.getMessages(result.json);
                 }
@@ -159,16 +169,19 @@ public class messageList extends AppCompatActivity {
         }
 
         @Override
-        public void onPostExecute(final List<Message> msgs){
+        public void onPostExecute(final List<Message> msgs) {
             int nb = 0;
-            if(msgs != null){
+            if (msgs != null) {
                 nb = msgs.size();
                 adapter.setMessages(msgs);
+
             }
+            swipe.setRefreshing(false);
             //Toast.makeText(messageList.this, "loaded nb messages: "+nb, Toast.LENGTH_LONG).show();
 
         }
     }
+
     protected class SendMessageAsyncTask extends AsyncTask<String, Void, Integer> {
 
         @Override
@@ -200,8 +213,9 @@ public class messageList extends AppCompatActivity {
         public void onPostExecute(Integer status) {
             if (status != 200) {
                 Toast.makeText(messageList.this, "Error sending message", Toast.LENGTH_SHORT).show();
-            }else {
-                Toast.makeText(messageList.this, "Message sended", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Snackbar.make(findViewById(R.id.activity_message_list),"Message envoyé",Snackbar.LENGTH_SHORT).show();
             }
         }
     }

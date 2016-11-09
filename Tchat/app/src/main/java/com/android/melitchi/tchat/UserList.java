@@ -6,6 +6,7 @@ package com.android.melitchi.tchat;
 
     import android.content.Context;
     import android.os.AsyncTask;
+    import android.support.v4.widget.SwipeRefreshLayout;
     import android.support.v7.app.AppCompatActivity;
     import android.os.Bundle;
     import android.util.Log;
@@ -27,6 +28,7 @@ public class UserList extends AppCompatActivity {
         String token;
         ListView userList;
         UsersAdapter adapter;
+        SwipeRefreshLayout swipeUsers;
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -38,6 +40,16 @@ public class UserList extends AppCompatActivity {
             }
             adapter=new UsersAdapter(UserList.this);
             userList=(ListView)findViewById(R.id.userListView);
+            swipeUsers=(SwipeRefreshLayout)findViewById(R.id.swipeUsers);
+            swipeUsers.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    new GetUserAsyncTask(UserList.this).execute();
+                    userList.setAdapter(adapter);
+                }
+            });
+            swipeUsers.setColorSchemeColors(this.getResources().getColor(R.color.colorAccent), this.getResources().getColor(R.color.colorPrimary));
+
 
         }
 
@@ -97,6 +109,7 @@ public class UserList extends AppCompatActivity {
                 nb = users.size();
                 adapter.setUsers(users);
             }
+            swipeUsers.setRefreshing(false);
             //Toast.makeText(messageList.this, "loaded nb messages: "+nb, Toast.LENGTH_LONG).show();
 
         }
