@@ -103,17 +103,15 @@ public class HelloAsyncTask extends AsyncTask<String, Void,  HttpResult> {
             Toast.makeText(context, "Vous êtes connecté", Toast.LENGTH_SHORT).show();
             String token="";
             try {
-
                 token = new JSONObject(response.json).optString("token");
-                Session.getInstance().setToken(token);
-            } catch (JSONException e) {
-                Log.e("token","unable to get token",e);
-                e.printStackTrace();
-            }
-            if (!token.isEmpty()) {
+                //Session.getInstance().setToken(token);
+                PreferenceHelper.setToken(LoginActivity.this,token);
                 Intent in = new Intent(LoginActivity.this, TchatActivity.class);
                 //in.putExtra("token",token);
                 startActivity(in);
+            } catch (JSONException e) {
+                Log.e("token","unable to get token",e);
+                e.printStackTrace();
             }
         } else {
             Toast.makeText(LoginActivity.this, "signin failed", Toast.LENGTH_LONG).show();

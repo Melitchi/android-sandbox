@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.android.melitchi.tchat.PreferenceHelper;
 import com.android.melitchi.tchat.R;
 import com.android.melitchi.tchat.Session;
 import com.android.melitchi.tchat.UserList;
@@ -73,7 +74,7 @@ public class UserFragment extends Fragment {
             InputStream inputStream = null;
 
             try {
-                HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/users", null, Session.getInstance().getToken());
+                HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/users", null, PreferenceHelper.getToken(UserFragment.this.getActivity()));
                 // if ok
                 if (result.code == 200) {
                     // Convert the InputStream into a string

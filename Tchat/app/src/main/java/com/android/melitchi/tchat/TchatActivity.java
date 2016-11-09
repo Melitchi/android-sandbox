@@ -43,10 +43,12 @@ public class TchatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tchat);
         navView=(NavigationView)findViewById(R.id.nav_menu);
-        token = Session.getInstance().getToken();
-
-        if (token == null) {
+        //token = Session.getInstance().getToken();
+        token=PreferenceHelper.getToken(TchatActivity.this);
+        Log.e("token","token value "+token);
+        if (token == "") {
             Toast.makeText(this, "No token. Can't display activity", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(TchatActivity.this,LoginActivity.class));
             finish();
         }
 

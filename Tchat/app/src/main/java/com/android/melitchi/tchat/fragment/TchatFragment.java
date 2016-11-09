@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.melitchi.tchat.PreferenceHelper;
 import com.android.melitchi.tchat.R;
 import com.android.melitchi.tchat.Session;
 import com.android.melitchi.tchat.adapter.MessageAdapter;
@@ -127,7 +128,7 @@ public class TchatFragment extends Fragment {
             InputStream inputStream = null;
 
             try {
-                HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/messages", null, Session.getInstance().getToken());
+                HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/messages", null, PreferenceHelper.getToken(TchatFragment.this.getActivity()));
                 // if ok
                 if (result.code == 200) {
                     // Convert the InputStream into a string
@@ -174,7 +175,7 @@ public class TchatFragment extends Fragment {
             try {
                 Map<String, String> p = new HashMap<>();
                 p.put("message", params[0]);
-                HttpResult result = NetworkHelper.doPost("http://cesi.cleverapps.io/messages", p, Session.getInstance().getToken());
+                HttpResult result = NetworkHelper.doPost("http://cesi.cleverapps.io/messages", p, PreferenceHelper.getToken(TchatFragment.this.getActivity()));
 
                 return result.code;
 
