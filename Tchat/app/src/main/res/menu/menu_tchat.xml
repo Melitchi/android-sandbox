@@ -5,4 +5,14 @@
         android:title="Liste des utilisateurs"
         android:showAsAction="always"
         />
+    <item android:id="@+id/menu_disconnect"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="Liste des utilisateurs"
+        android:showAsAction="always"
+        />
+    <item android:id="@+id/menu_tchat_refresh"
+        android:icon="@android:drawable/ic_menu_rotate"
+        android:title="Liste des utilisateurs"
+        android:showAsAction="always"
+        />
 </menu>
