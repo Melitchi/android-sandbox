@@ -52,7 +52,7 @@
     </RelativeLayout>
     <!-- Menu -->
     <android.support.design.widget.NavigationView
-        android:id="@+id/drawer_menu"
+        android:id="@+id/nav_menu"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"

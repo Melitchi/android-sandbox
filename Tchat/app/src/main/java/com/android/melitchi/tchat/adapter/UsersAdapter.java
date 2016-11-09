@@ -62,7 +62,7 @@ public class UsersAdapter extends BaseAdapter{
         user.setText(getItem(i).getUsername());
         img.setText(getItem(i).getUrl());
 
-        DateFormat dateForm = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        DateFormat dateForm = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date netDate = (new Date(getItem(i).getDate()));
         date.setText(String.valueOf(dateForm.format(netDate)));
         return view;

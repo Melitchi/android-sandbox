@@ -3,6 +3,8 @@ package com.android.melitchi.tchat;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +24,7 @@ import com.android.melitchi.tchat.model.HttpResult;
 import com.android.melitchi.tchat.model.JsonParser;
 import com.android.melitchi.tchat.model.NetworkHelper;
 import com.android.melitchi.tchat.pojos.Message;
+import com.android.melitchi.tchat.pojos.User;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +41,7 @@ public class messageList extends AppCompatActivity {
     private Button send;
     private MessageAdapter adapter;
     SwipeRefreshLayout swipe;
+    NavigationView navView;
     private GetMessagesAsyncTask mtask;
     Timer timer;
     TimerTask task = new TimerTask() {
@@ -57,6 +61,7 @@ public class messageList extends AppCompatActivity {
             finish();
         }
         listview = (ListView) findViewById(R.id.listview);
+        navView=(NavigationView)findViewById(R.id.nav_menu);
         msg = (EditText) findViewById(R.id.txtToSend);
         send = (Button) findViewById(R.id.sendBtn);
         swipe = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
@@ -80,6 +85,25 @@ public class messageList extends AppCompatActivity {
             }
         });
         swipe.setColorSchemeColors(this.getResources().getColor(R.color.colorAccent), this.getResources().getColor(R.color.colorPrimary));
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.menu_tchat_users:
+                        Intent i=new Intent(messageList.this, UserList.class);
+                        i.putExtra("token",token);
+                        startActivity(i);
+                        return(true);
+                    case R.id.menu_tchat_disconnect:
+                        messageList.this.finish();
+                        return(true);
+                    case R.id.menu_tchat_refresh:
+                        refresh();
+                        return(true);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
