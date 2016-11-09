@@ -1,24 +1,27 @@
-package com.android.melitchi.tchat;
+package com.android.melitchi.tchat.fragment;
+
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.melitchi.tchat.R;
+import com.android.melitchi.tchat.Session;
 import com.android.melitchi.tchat.adapter.MessageAdapter;
 import com.android.melitchi.tchat.model.HttpResult;
 import com.android.melitchi.tchat.model.JsonParser;
@@ -33,14 +36,18 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class messageList extends AppCompatActivity {
-    private String token;
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class TchatFragment extends Fragment {
+
     private ListView listview;
     private EditText msg;
     private Button send;
     private MessageAdapter adapter;
-    SwipeRefreshLayout swipe;
-    NavigationView navView;
+    private SwipeRefreshLayout swipe;
+    private View view;
+
     private GetMessagesAsyncTask mtask;
     Timer timer;
     TimerTask task = new TimerTask() {
@@ -51,19 +58,13 @@ public class messageList extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tchat);
-        token = this.getIntent().getExtras().getString("token");
-        if (token == null) {
-            Toast.makeText(this, "No token. Can't display activity", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-        listview = (ListView) findViewById(R.id.listview);
-        navView=(NavigationView)findViewById(R.id.nav_menu);
-        msg = (EditText) findViewById(R.id.txtToSend);
-        send = (Button) findViewById(R.id.sendBtn);
-        swipe = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_tchat, container, false);
+        listview = (ListView) v.findViewById(R.id.listview);
+        msg = (EditText) v.findViewById(R.id.txtToSend);
+        send = (Button) v.findViewById(R.id.sendBtn);
+        swipe = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefresh);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +76,7 @@ public class messageList extends AppCompatActivity {
                 msg.setText("");
             }
         });
-        adapter = new MessageAdapter(this);
+        adapter = new MessageAdapter(inflater.getContext());
         listview.setAdapter(adapter);
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -84,48 +85,11 @@ public class messageList extends AppCompatActivity {
             }
         });
         swipe.setColorSchemeColors(this.getResources().getColor(R.color.colorAccent), this.getResources().getColor(R.color.colorPrimary));
-        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.menu_tchat_users:
-                        Intent i=new Intent(messageList.this, UserList.class);
-                        i.putExtra("token",token);
-                        startActivity(i);
-                        return(true);
-                    case R.id.menu_tchat_disconnect:
-                        messageList.this.finish();
-                        return(true);
-                    case R.id.menu_tchat_refresh:
-                        refresh();
-                        return(true);
-                }
-                return false;
-            }
-        });
+        return v;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_tchat, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_tchat_users:
-                Intent in = new Intent(messageList.this, UserList.class);
-                in.putExtra("token", token);
-                startActivity(in);
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         timer = new Timer();
         timer.schedule(task, 500, 5000);
@@ -133,23 +97,19 @@ public class messageList extends AppCompatActivity {
 
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         timer.cancel();
         mtask.cancel(true);
     }
 
-    private void refresh() {
+    public void refresh() {
         if (mtask == null || mtask.getStatus() != AsyncTask.Status.RUNNING) {
-            mtask = new GetMessagesAsyncTask(messageList.this);
+            mtask = new GetMessagesAsyncTask(TchatFragment.this.getActivity());
             mtask.execute();
         }
-
     }
 
-    /**
-     * AsyncTask for list message
-     */
     protected class GetMessagesAsyncTask extends AsyncTask<String, Void, List<Message>> {
 
         Context context;
@@ -167,7 +127,7 @@ public class messageList extends AppCompatActivity {
             InputStream inputStream = null;
 
             try {
-                HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/messages", null, token);
+                HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/messages", null, Session.getInstance().getToken());
                 // if ok
                 if (result.code == 200) {
                     // Convert the InputStream into a string
@@ -200,7 +160,7 @@ public class messageList extends AppCompatActivity {
 
             }
             swipe.setRefreshing(false);
-            //Toast.makeText(messageList.this, "loaded nb messages: "+nb, Toast.LENGTH_LONG).show();
+            //Toast.makeText(TchatActivity.this, "loaded nb messages: "+nb, Toast.LENGTH_LONG).show();
 
         }
     }
@@ -214,7 +174,7 @@ public class messageList extends AppCompatActivity {
             try {
                 Map<String, String> p = new HashMap<>();
                 p.put("message", params[0]);
-                HttpResult result = NetworkHelper.doPost("http://cesi.cleverapps.io/messages", p, token);
+                HttpResult result = NetworkHelper.doPost("http://cesi.cleverapps.io/messages", p, Session.getInstance().getToken());
 
                 return result.code;
 
@@ -235,10 +195,11 @@ public class messageList extends AppCompatActivity {
         @Override
         public void onPostExecute(Integer status) {
             if (status != 200) {
-                Toast.makeText(messageList.this, "Error sending message", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TchatFragment.this.getActivity(), "Error sending message", Toast.LENGTH_SHORT).show();
 
             } else {
-                Snackbar.make(findViewById(R.id.activity_message_list),"Message envoyé",Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(TchatFragment.this.getActivity(), "Message sended", Toast.LENGTH_SHORT).show();
+                // Snackbar.make(view.findViewById(R.id.activity_fragment_tchat),"Message envoyé",Snackbar.LENGTH_SHORT).show();
             }
         }
     }

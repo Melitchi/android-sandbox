@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Tchat</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="pass">Mot de passe</string>
+    <string name="connection">Connexion</string>
+    <string name="createAccount">Create new account</string>
+    <string name="errorLogin">Impossible de se connecter à l\'aplication</string>
+    <string name="errorsendMessage">Impossible d\'envoyer le message</string>
+    <string name="errorGetUsers">Impossible de récupérer la liste des utilisateurs</string>
+</resources>
