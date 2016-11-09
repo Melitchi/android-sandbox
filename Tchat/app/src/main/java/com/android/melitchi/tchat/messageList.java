@@ -24,7 +24,6 @@ import com.android.melitchi.tchat.model.HttpResult;
 import com.android.melitchi.tchat.model.JsonParser;
 import com.android.melitchi.tchat.model.NetworkHelper;
 import com.android.melitchi.tchat.pojos.Message;
-import com.android.melitchi.tchat.pojos.User;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +53,7 @@ public class messageList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_list);
+        setContentView(R.layout.activity_tchat);
         token = this.getIntent().getExtras().getString("token");
         if (token == null) {
             Toast.makeText(this, "No token. Can't display activity", Toast.LENGTH_SHORT).show();

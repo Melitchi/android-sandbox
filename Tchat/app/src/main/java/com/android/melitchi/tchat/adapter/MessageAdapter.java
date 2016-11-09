@@ -54,7 +54,7 @@ public class MessageAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
 
         LayoutInflater inflater =((Activity)context).getLayoutInflater();
-        view= inflater.inflate(R.layout.activity_message_item, viewGroup,false);
+        view= inflater.inflate(R.layout.item_message, viewGroup,false);
         TextView user =(TextView) view.findViewById(R.id.msg_user);
         TextView message =(TextView) view.findViewById(R.id.msg_message);
         TextView date =(TextView) view.findViewById(R.id.msg_date);

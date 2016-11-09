@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.android.melitchi.tchat.R;
-import com.android.melitchi.tchat.pojos.Message;
 import com.android.melitchi.tchat.pojos.User;
 
 import java.text.DateFormat;
@@ -54,7 +53,7 @@ public class UsersAdapter extends BaseAdapter{
     public View getView(int i, View view, ViewGroup viewGroup) {
 
         LayoutInflater inflater =((Activity)context).getLayoutInflater();
-        view= inflater.inflate(R.layout.activity_item_users, viewGroup,false);
+        view= inflater.inflate(R.layout.item_users, viewGroup,false);
         TextView user =(TextView) view.findViewById(R.id.userlist_username);
         TextView img =(TextView) view.findViewById(R.id.userlist_img);
         TextView date=(TextView)view.findViewById(R.id.userlist_date);
