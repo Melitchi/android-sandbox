@@ -24,6 +24,7 @@ import com.android.melitchi.tchat.PreferenceHelper;
 import com.android.melitchi.tchat.R;
 import com.android.melitchi.tchat.Session;
 import com.android.melitchi.tchat.adapter.MessageAdapter;
+import com.android.melitchi.tchat.database.MessageDao;
 import com.android.melitchi.tchat.model.HttpResult;
 import com.android.melitchi.tchat.model.JsonParser;
 import com.android.melitchi.tchat.model.NetworkHelper;
@@ -48,6 +49,7 @@ public class TchatFragment extends Fragment {
     private MessageAdapter adapter;
     private SwipeRefreshLayout swipe;
     private View view;
+    private MessageDao dao;
 
     private GetMessagesAsyncTask mtask;
     Timer timer;
@@ -66,6 +68,7 @@ public class TchatFragment extends Fragment {
         msg = (EditText) v.findViewById(R.id.txtToSend);
         send = (Button) v.findViewById(R.id.sendBtn);
         swipe = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefresh);
+        dao=new MessageDao(TchatFragment.this.getContext());
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,31 +127,18 @@ public class TchatFragment extends Fragment {
             if (!NetworkHelper.isInternetAvailable(context)) {
                 return null;
             }
-
-            InputStream inputStream = null;
-
             try {
                 HttpResult result = NetworkHelper.doGet("http://cesi.cleverapps.io/messages", null, PreferenceHelper.getToken(TchatFragment.this.getActivity()));
                 // if ok
                 if (result.code == 200) {
-                    // Convert the InputStream into a string
-                    return JsonParser.getMessages(result.json);
+                    List<Message>messages = JsonParser.getMessages(result.json);
+                    dao.writeMessages(messages);
+                    return messages;
                 }
                 return null;
-
-                // Makes sure that the InputStream is closed after the app is
-                // finished using it.
             } catch (Exception e) {
                 Log.e("NetworkHelper", e.getMessage());
-                return null;
-            } finally {
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        Log.e("NetworkHelper", e.getMessage());
-                    }
-                }
+                return dao.getMessages();
             }
         }
 
@@ -158,7 +148,6 @@ public class TchatFragment extends Fragment {
             if (msgs != null) {
                 nb = msgs.size();
                 adapter.setMessages(msgs);
-
             }
             swipe.setRefreshing(false);
             //Toast.makeText(TchatActivity.this, "loaded nb messages: "+nb, Toast.LENGTH_LONG).show();
